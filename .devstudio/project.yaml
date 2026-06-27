@@ -1,0 +1,7 @@
+name: windows-10-minus
+repo: lancer1977/windows-10-minus
+shape: documentation-tooling
+tracker: https://github.com/lancer1977/windows-10-minus/issues/5
+parent_tracker: https://github.com/lancer1977/dev-forge/issues/440
+validation:
+  command: ./scripts/validate.sh

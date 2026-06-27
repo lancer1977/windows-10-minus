@@ -99,9 +99,33 @@ docs/
   install-flow.md
   test-plan.md
   maintenance.md
+  index.md
+  templates/machine-inventory.md
 scripts/
   Apply-Win10Minus.ps1
+  validate.sh
 ```
+
+---
+
+## Validation
+
+Run the repository validation from a Linux/macOS shell or GitHub Actions:
+
+```bash
+./scripts/validate.sh
+```
+
+Run the PowerShell cleanup script only in a disposable VM or on a machine that
+has a restore point/snapshot:
+
+```powershell
+.\scripts\Apply-Win10Minus.ps1 -WhatIf
+```
+
+The validation script checks the required docs spine, machine-inventory
+template headings, cleanup script parseability when PowerShell is available,
+and basic safety wording.
 
 ---
 
