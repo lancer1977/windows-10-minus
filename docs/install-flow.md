@@ -39,6 +39,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 10. Reboot.
 11. Validate Windows Update, Defender, Store, audio, video, capture card, and target software.
 12. Create a disk image.
+13. Record the deployment in [docs/templates/machine-inventory.md](templates/machine-inventory.md), including profile, drivers, recovery image, and maintenance dates.
 
 Optional appliance pass after validation:
 

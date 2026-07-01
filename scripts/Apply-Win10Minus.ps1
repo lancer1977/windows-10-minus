@@ -23,6 +23,9 @@
 
 .EXAMPLE
     .\Apply-Win10Minus.ps1 -Profile ProSafe -WhatIf
+
+.EXAMPLE
+    .\Apply-Win10Minus.ps1 -Profile ProSafe -EvidencePath .\artifacts\prosafe-apply.json
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -35,6 +38,7 @@ param(
     [switch]$SkipRestorePoint,
     [switch]$SkipAppxRemoval,
     [switch]$SkipExplorerRestart,
+    [string]$EvidencePath,
 
     [string]$LogPath = "$env:ProgramData\Windows10Minus\Logs"
 )
@@ -406,6 +410,34 @@ function Write-Summary {
     Write-Host 'Reboot recommended.' -ForegroundColor Green
 }
 
+function Collect-Evidence {
+    param(
+        [string]$Path
+    )
+
+    if (-not $Path) {
+        return
+    }
+
+    if ($WhatIfPreference) {
+        Add-WtmWarning 'Evidence collection is skipped in WhatIf mode.'
+        return
+    }
+
+    $collector = Join-Path $PSScriptRoot 'Collect-Win10MinusEvidence.ps1'
+    if (-not (Test-Path -Path $collector)) {
+        Add-WtmWarning "Evidence collector script not found at $collector. Run ./scripts/Collect-Win10MinusEvidence.ps1 manually."
+        return
+    }
+
+    try {
+        & $collector -Profile $Profile -ProfileLogPath $LogPath -EvidencePath $Path
+    }
+    catch {
+        Add-WtmWarning "Evidence collection failed: $($_.Exception.Message)"
+    }
+}
+
 try {
     if (-not (Test-IsAdministrator)) {
         throw 'Run this script from an elevated PowerShell prompt.'
@@ -437,6 +469,7 @@ try {
     Remove-OneDriveIfRequested
     Restart-ExplorerIfNeeded
     Write-Summary
+    Collect-Evidence -Path $EvidencePath
 }
 finally {
     Stop-WtmTranscript

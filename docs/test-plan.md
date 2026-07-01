@@ -29,6 +29,45 @@ Use this before running Windows 10 Minus on real hardware.
 6. Copy repo or script into VM.
 7. Open elevated PowerShell.
 
+Run the evidence collector after any scripted run to capture deterministic post-run state (or pass `-EvidencePath` directly to `Apply-Win10Minus.ps1`):
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\win10minus-evidence.json
+```
+(or)
+
+```powershell
+.\scripts\Apply-Win10Minus.ps1 -Profile ProSafe -EvidencePath .\artifacts\prosafe-apply.json
+```
+
+After collecting evidence, validate JSON shape before filing:
+
+```bash
+python3 scripts/validate-win10minus-evidence.py ./artifacts/prosafe-apply.json --pretty
+```
+
+To run evidence validation from Linux CI for collected artifacts, set:
+
+```bash
+export WIN10MINUS_EVIDENCE_PATHS="/tmp/prosafe-apply.json /tmp/proappliance-apply.json"
+./scripts/validate.sh
+```
+
+(Create `artifacts/` first as needed.)
+
+### Evidence output contract
+
+Each collected JSON is expected to contain:
+
+- `os`: OS name/version/build and edition.
+- `services`: service status and startup state for `WinDefend` and `wuauserv`.
+- `appx.store_present`: whether `Microsoft.WindowsStore` is installed.
+- `appx.defender_enabled`: real-time protection and cloud block level.
+- `scripts.profile_log_exists` plus latest log file path when present.
+- `checks`: interactive verification hints for Store, Start menu, browser, Defender, and Update.
+- `hardware`: optional device snapshot for audio, capture/video, and display controller basics when available.
+- `profile`: selected profile name for that evidence run.
+
 ---
 
 ## Test: ProSafe WhatIf
@@ -47,6 +86,12 @@ Expected:
 - No Explorer restart.
 - Summary prints intended registry keys.
 - No fatal errors.
+
+Post-check:
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\prosafe-whatif.json
+```
 
 ---
 
@@ -69,6 +114,12 @@ Expected:
 - Defender still works.
 - Microsoft Store still works.
 
+Post-check:
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\prosafe-apply.json
+```
+
 Rollback:
 
 - Revert VM snapshot.
@@ -90,6 +141,12 @@ Expected:
 - Store remains available.
 - Machine remains usable after reboot.
 
+Post-check:
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\proappliance-apply.json
+```
+
 Rollback:
 
 - Revert VM snapshot.
@@ -109,6 +166,12 @@ Expected:
 - OneDrive uninstall is attempted if installer exists.
 - Script handles missing OneDrive gracefully.
 - Startup entry is removed when present.
+
+Post-check:
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\proappliance-onedrive.json
+```
 
 Rollback:
 
@@ -130,6 +193,12 @@ Expected:
 - Missing packages do not cause fatal errors.
 - Game Bar/Xbox features may be removed or reduced.
 
+Post-check:
+
+```powershell
+.\scripts\Collect-Win10MinusEvidence.ps1 -EvidencePath .\artifacts\proappliance-xbox.json
+```
+
 Rollback:
 
 - Revert VM snapshot.
@@ -148,6 +217,8 @@ Rollback:
 - [ ] Browser opens.
 - [ ] Event Viewer does not show obvious critical script-caused breakage.
 - [ ] Script log exists.
+- [ ] Audio endpoints are detected and functioning after reboot.
+- [ ] Capture/video devices are detected where expected for retro/capture targets.
 
 ---
 

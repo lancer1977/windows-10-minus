@@ -5,26 +5,35 @@ Use this template to record one machine per entry.
 ## Machine Details
 
 - Name:
-- Hostname:
-- Owner:
-- Role:
+- Machine name:
+- Purpose:
 - Environment:
-- Status:
+- Status (planned/in-use/archived):
+- Hardware model:
+- Install date:
 
 ## System
 
-- OS:
-- Edition:
+- Windows edition:
 - Version:
 - Build:
 - Architecture:
+- ISO/source used:
+- License/source notes:
+- Script profile used:
+- Script commit used:
+- Last maintenance check:
+- Next maintenance date:
 
 ## Hardware
 
 - CPU:
 - RAM:
-- Storage:
 - GPU:
+- Storage:
+- Capture card (model):
+- Retro/gaming hardware:
+- Audio devices:
 
 ## Network
 
@@ -36,8 +45,10 @@ Use this template to record one machine per entry.
 ## Notes
 
 - Installed software:
-- Licenses or keys:
-- Recovery or backup info:
+- Driver sources/versions:
+- Recovery image location:
+- Restore point or snapshot name:
+- Last maintenance outcome:
 - Special configuration:
 
 ## Last Updated

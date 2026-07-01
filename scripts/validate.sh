@@ -13,6 +13,7 @@ required_files=(
   "docs/test-plan.md"
   "docs/templates/machine-inventory.md"
   "scripts/Apply-Win10Minus.ps1"
+  "scripts/Collect-Win10MinusEvidence.ps1"
 )
 
 for file in "${required_files[@]}"; do
@@ -49,9 +50,21 @@ if grep -RInE "^(<<<<<<<|=======|>>>>>>>)" README.md repo-state.md code_health.m
 fi
 
 if command -v pwsh >/dev/null 2>&1; then
-  pwsh -NoLogo -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('scripts/Apply-Win10Minus.ps1', [ref]\$null, [ref]\$errors) | Out-Null; if (\$errors.Count -gt 0) { \$errors | ForEach-Object { Write-Error \$_ }; exit 1 }"
+  for ps_file in scripts/Apply-Win10Minus.ps1 scripts/Collect-Win10MinusEvidence.ps1; do
+    pwsh -NoLogo -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('${ps_file}', [ref]\$null, [ref]\$errors) | Out-Null; if (\$errors.Count -gt 0) { \$errors | ForEach-Object { Write-Error \$_ }; exit 1 }"
+  done
 else
   echo "pwsh not found; skipping PowerShell parser validation."
+fi
+
+if [[ -n "${WIN10MINUS_EVIDENCE_PATHS:-}" ]]; then
+  for path in ${WIN10MINUS_EVIDENCE_PATHS}; do
+    if [[ ! -f "$path" ]]; then
+      echo "Missing evidence file: $path" >&2
+      exit 1
+    fi
+    python3 scripts/validate-win10minus-evidence.py "$path" >/dev/null
+  done
 fi
 
 echo "windows-10-minus validation passed."

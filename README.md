@@ -51,6 +51,7 @@ Optional for a retro/capture/appliance box:
 | Third-party modified ISOs | Disposable/offline experiments only | Unknown security/update state | Not recommended |
 
 See: [docs/iso-options.md](docs/iso-options.md)
+Use: [docs/templates/machine-inventory.md](docs/templates/machine-inventory.md)
 
 ---
 
